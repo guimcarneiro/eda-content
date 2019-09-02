@@ -3,7 +3,7 @@ package sorting;
 import java.util.Arrays;
 import java.util.Scanner;
 
-public class OrderedInsertionSort {
+public class InsertionSort {
 
 	public static void sort(int[] v) {
 		for(int i=0;i<v.length-1;i++) {
