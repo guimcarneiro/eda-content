@@ -3,6 +3,12 @@ package problems;
 import java.util.Arrays;
 import java.util.Scanner;
 
+/**
+ * fonte: http://tst-eda.splab.ufcg.edu.br/#!/app/activity/mariana_e_os_livros
+ * 
+ * @author guimcarneiro
+ *
+ */
 public class MarianaEOsLivros {
 
 	//Use Insertion Sort to sort books in alphabetic order.
