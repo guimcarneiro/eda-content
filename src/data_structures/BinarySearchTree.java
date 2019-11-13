@@ -1,135 +1,278 @@
 package data_structures;
 
-import java.util.Deque;
-import java.util.LinkedList;
-import java.util.Scanner;
-
 public class BinarySearchTree {
 
-	private BstNode root;
+	private BSTNode root;
 	
-	
-	private boolean isEmpty() {
-		return (this.root == null);
+	public boolean isEmpty() {
+		return root == null;
 	}
 	
-	public void add(int value) {
-		if(isEmpty()) {
-			this.root = new BstNode(value);
+	public void insert(int value) {
+		
+		if(this.isEmpty()) {
+			this.root = new BSTNode(value);
 		}else {
-			this.root.add(value);
-		}
-	}
-	
-	public String getMaxPath() {
-		String path = "";
-		if(!isEmpty()) {
-			int max = this.root.getValue();
-			
-			BstNode auxNode = this.root;
-			
-			while(auxNode.getDireita() != null) {
-				path += auxNode.getValue() + " ";
-				auxNode = auxNode.getDireita();
+			if(value > this.root.getValue()) {
+				if(this.root.getRight() == null) {
+					BSTNode newNode = new BSTNode(value);
+					newNode.setParent(this.root);
+					this.root.setRight(newNode);
+				}else {
+					insert(this.root.getRight(), value);
+				}
+			}else if(value < this.root.getValue()) {
+				if(this.root.getLeft() == null) {
+					BSTNode newNode = new BSTNode(value);
+					newNode.setParent(this.root);
+					this.root.setLeft(newNode);
+				}else {
+					insert(this.root.getLeft(), value);
+				}
 			}
-			
-			path += auxNode.getValue();
 		}
-		
-		return path;
 	}
 	
-	public int getHeight() {
-		return getHeight(this.root);
-	}
-	
-	private int getHeight(BstNode node) {
-		
-		if(node.getDireita() == null && node.getEsquerda() == null) {
-			return 0;
-		} else {
-			if(node.getDireita() == null) {
-				return 1 + getHeight(node.getEsquerda());
-			}else if(node.getEsquerda() == null) {
-				return 1 + getHeight(node.getDireita());
+	private void insert(BSTNode node, int value) {
+		if(value > node.getValue()) {
+			if(node.getRight() == null) {
+				BSTNode newNode = new BSTNode(value);
+				newNode.setParent(node);
+				node.setRight(newNode);
 			}else {
-				return 1 + Math.max(getHeight(node.getEsquerda()), getHeight(node.getDireita()));
+				insert(node.getRight(), value);
+			}
+		}else {
+			if(node.getLeft() == null) {
+				BSTNode newNode = new BSTNode(value);
+				newNode.setParent(node);
+				node.setLeft(newNode);
+			}else {
+				insert(node.getLeft(), value);
 			}
 		}
-		
 	}
 	
-	public String bfs() {
-		String saida = "";
-		if(!isEmpty()) {
-			Deque<BstNode> fila = new LinkedList<BstNode>();
-			
-			fila.addLast(this.root);
-			
-			while(!fila.isEmpty()) {
-				BstNode auxNode = fila.removeFirst();
-				saida += auxNode.getValue() + " ";
-			
-				if(auxNode.getEsquerda() != null) {
-					fila.addLast(auxNode.getEsquerda());
-				}
-			
-				if(auxNode.getDireita() != null) {
-					fila.addLast(auxNode.getDireita());
-				}
-			}	
-		}
-		return saida.substring(0, saida.length()-1);
+	public BSTNode search(int value) {
+		return search(this.root, value);
 	}
 	
-	public String getSearchPath(int value) {
-		String path = "";
-		if(!isEmpty()) {
-			BstNode auxNode = this.root;
-			
-			while(auxNode != null) {
-				if(auxNode.getValue() > value) {
-					path += auxNode.getValue() + ", ";
-					auxNode = auxNode.getEsquerda();
-				}else if(auxNode.getValue() < value) {
-					path += auxNode.getValue() + ", ";
-					auxNode = auxNode.getDireita();
-				} else {
-					path += auxNode.getValue() + ", ";
-					break;
-				}
-			}
-		}
+	private BSTNode search(BSTNode node, int value) {
+		if(node == null)
+			return null;
+		else if(node.getValue() == value)
+			return node;
+		else if(node.getValue() < value)
+			return search(node.getRight(), value);
+		else
+			return search(node.getLeft(), value);
+	}
+	
+	public BSTNode max() {
+		if(isEmpty())
+			return null;
+		return max(this.root);
+	}
+	
+	private BSTNode max(BSTNode node) {
+		if(node.getRight() == null)
+			return node;
+		return max(node.getRight());
+	}
+	
+	public BSTNode min() {
+		if(isEmpty())
+			return null;
+		return min(this.root);
+	}
+	
+	private BSTNode min(BSTNode node) {
+		if(node.getLeft() == null)
+			return node;
+		return min(node.getLeft());
+	}
+	
+	public BSTNode predecessor(int value) {
+		BSTNode node = search(value);
 		
-		return "["+path.substring(0, path.length()-2)+"]";
+		if(node == null)
+			return null;
+		
+		if(node.getLeft() == null)
+			return predecessor(node.getParent(), value);
+		return max(node.getLeft());
+	}
+	
+	private BSTNode predecessor(BSTNode node, int value) {
+		if(node == null) {
+			return null;
+		}
+		if(node.getValue() < value)
+			return node;
+		return predecessor(node.getParent(), value);
+	}
+	
+	public BSTNode sucessor(int value) {
+		BSTNode node = search(value);
+		
+		if(node == null)
+			return null;
+		
+		if(node.getRight() == null)
+			return sucessor(node.getParent(), value);
+		return min(node.getRight());
+	}
+	
+	private BSTNode sucessor(BSTNode node, int value) {
+		if(node == null)
+			return null;
+		if(node.getValue() > value)
+			return node;
+		return sucessor(node.getParent(), value);
+	}
+	
+	private BSTNode sucessor(BSTNode node) {
+		if(node == null)
+			return null;
+		return sucessor(node, node.getValue());
+	}
+	
+	public int height() {
+		return height(this.root);
+	}
+	
+	private int height(BSTNode node) {
+		if(node == null)
+			return -1;
+		else
+			return 1 + Math.max(height(node.getLeft()), height(node.getRight()));
+	}
+	
+	public void remove(int value) {
+		if(isEmpty())
+			return;
+		
+		BSTNode node = search(value);
+		if(node == null)
+			return;
+		
+		remove(node);
+	}
+	
+	public void remove(BSTNode node) {
+		 if(node.isLeaf()) {
+			 if(node.getValue() < node.getParent().getValue()) {
+				 node.getParent().setLeft(null);
+			 }else {
+				 node.getParent().setRight(null);
+			 }
+		 }else if(node.hasOnlyLeftChild()) {
+			 node.getLeft().setParent(node.getParent());
+			 if(node.getValue() < node.getParent().getValue()) 
+				 node.getParent().setLeft(node.getLeft());
+			 else 
+				 node.getParent().setRight(node.getLeft());
+			 
+		 }else if(node.hasOnlyRightChild()) {
+			 node.getRight().setParent(node.getParent());
+			 if(node.getValue() < node.getParent().getValue())
+				 node.getParent().setLeft(node.getRight());
+			 else
+				 node.getParent().setRight(node.getRight());
+		 }else {
+			 BSTNode sucessor = sucessor(node);
+			 node.setValue(sucessor.getValue());
+			 remove(sucessor);
+		 }
+		 
+		 
+	}
+	
+	public void preOrder() {
+		preOrder(this.root);
+	}
+	
+	private void preOrder(BSTNode node) {
+		if(node != null) {
+			System.out.println(node);
+			preOrder(node.getLeft());
+			preOrder(node.getRight());
+		}
+	}
+	
+	public void inOrder() {
+		inOrder(this.root);
+	}
+	
+	private void inOrder(BSTNode node) {
+		if(node != null) {
+			inOrder(node.getLeft());
+			System.out.println(node.getValue());
+			inOrder(node.getRight());
+		}
+	}
+	
+	public void posOrder() {
+		posOrder(this.root);
+	}
+	
+	private void posOrder(BSTNode node) {
+		if(node != null) {
+			posOrder(node.getLeft());
+			posOrder(node.getRight());
+			System.out.println(node.getValue());
+		}
 	}
 	
 	public static void main(String[] args) {
-		
 		BinarySearchTree bst = new BinarySearchTree();
 		
-		Scanner sc = new Scanner(System.in);
-		String str = sc.nextLine();
-		String[] arrayStr = str.split(" ");
+		System.out.println("adding nodes: ");
+		int[] array = new int[] {5,10,12,3,6,84,76,8,2};
 		
-		for(int i=0; i < arrayStr.length; i++) {
-			bst.add(Integer.parseInt(arrayStr[i]));
+		for(int element: array) {
+			System.out.println("insert: " + element);
+			bst.insert(element);
 		}
 		
-		System.out.println(bst.bfs());
+		for(int element: array) {
+			System.out.println("Search " + element + ": " + bst.search(element).getValue());
+		}
+		
+		System.out.println("Min: " + bst.min().getValue());
+		System.out.println("Max: " + bst.max().getValue());
+		
+		for(int element: array) {
+			if(bst.predecessor(element) == null) {
+				System.out.println("Predecessor of " + element + ": " + null);
+			}else {				
+				System.out.println("Predecessor of " + element + ": " + bst.predecessor(element).getValue());
+			}
+		}
+		
+		for(int element: array) {
+			if(bst.sucessor(element) == null) {
+				System.out.println("Sucessor of " + element + ": " + null);
+			}else {	
+				System.out.println("Sucessor of " + element + ": " + bst.sucessor(element).getValue());
+			}
+		}
+		
+		System.out.println("Height of bst: " + bst.height());
+		
 		
 	}
-
+	
 }
 
-class BstNode {
+class BSTNode {
 	
+	private int value;
+	private BSTNode left;
+	private BSTNode right;
+	private BSTNode parent;
 	
-	int value;
-	BstNode esquerda;
-	BstNode direita;
-	
-	public BstNode (int value) {
+	public BSTNode(int value) {
 		this.value = value;
 	}
 
@@ -141,35 +284,40 @@ class BstNode {
 		this.value = value;
 	}
 
-	public BstNode getEsquerda() {
-		return esquerda;
+	public BSTNode getLeft() {
+		return left;
 	}
 
-	private void setEsquerda(BstNode esquerda) {
-		this.esquerda = esquerda;
-	}
-	
-	public BstNode getDireita() {
-		return direita;
+	public void setLeft(BSTNode left) {
+		this.left = left;
 	}
 
-	private void setDireita(BstNode direita) {
-		this.direita = direita;
+	public BSTNode getRight() {
+		return right;
+	}
+
+	public void setRight(BSTNode right) {
+		this.right = right;
+	}
+
+	public BSTNode getParent() {
+		return parent;
+	}
+
+	public void setParent(BSTNode parent) {
+		this.parent = parent;
 	}
 	
-	public void add(int value) {
-		if(value > this.value) {
-			if(this.direita == null) {
-				this.direita = new BstNode(value);
-			}else {
-				this.direita.add(value);
-			}
-		}else if(value < this.value) {
-			if(this.esquerda == null) {
-				this.esquerda = new BstNode(value);
-			}else {
-				this.esquerda.add(value);
-			}
-		}
+	public boolean isLeaf() {
+		return (this.right == null && this.left == null);
 	}
+	
+	public boolean hasOnlyLeftChild() {
+		return (this.left != null && this.right == null);
+	}
+	
+	public boolean hasOnlyRightChild() {
+		return (this.left == null && this.right != null);
+	}
+	
 }
