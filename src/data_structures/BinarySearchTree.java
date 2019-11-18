@@ -1,5 +1,8 @@
 package data_structures;
 
+import java.util.Deque;
+import java.util.LinkedList;
+
 public class BinarySearchTree {
 
 	private BSTNode root;
@@ -221,6 +224,24 @@ public class BinarySearchTree {
 			posOrder(node.getLeft());
 			posOrder(node.getRight());
 			System.out.println(node.getValue());
+		}
+	}
+	
+	public void printBFS() {
+		Deque<BSTNode> queue = new LinkedList<BSTNode>();
+		
+		if(!this.isEmpty()) {
+			queue.addLast(this.root);
+			while(!queue.isEmpty()) {
+				BSTNode atual = queue.removeFirst();
+				
+				System.out.println(atual.getValue());
+				
+				if(atual.getLeft() != null)
+					queue.addLast(atual.getLeft());
+				if(atual.getRight() != null)
+					queue.addLast(atual.getRight());
+			}
 		}
 	}
 	
